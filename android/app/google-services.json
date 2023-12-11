@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "817472392896",
+    "project_id": "blackcoffertask-4c3eb",
+    "storage_bucket": "blackcoffertask-4c3eb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:817472392896:android:3c3065c15a6029599a6725",
+        "android_client_info": {
+          "package_name": "com.example.backcoffer_task"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKF0wd1KtM679FnmjcEv9Iwca4Ma-3kxA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
