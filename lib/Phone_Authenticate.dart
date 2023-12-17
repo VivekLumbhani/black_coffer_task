@@ -43,7 +43,7 @@ class _Phone_AuthenticationState extends State<Phone_Authentication> {
                         ((PhoneAuthCredential credential) {}),
                     verificationFailed: (FirebaseAuthException ex) {},
                     codeSent: (String verificationid, int? resendtoken) {
-                      Navigator.push(context, MaterialPageRoute(builder: (context)=>OTPscreen(verificationid: verificationid,)));
+                      Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => OTPscreen(verificationid: verificationid,)));
                     },
                     codeAutoRetrievalTimeout: (String verificationid) {},
                     phoneNumber: phoneController.text.toString());

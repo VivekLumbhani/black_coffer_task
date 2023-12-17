@@ -1,4 +1,8 @@
 import 'dart:io';
+import 'dart:typed_data';
+
+import 'package:backcoffer_task/form.dart';
+import 'package:backcoffer_task/show_all_videos.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
@@ -6,14 +10,15 @@ import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:path/path.dart' as path;
 
-class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+
+class MainScreen extends StatefulWidget {
+  const MainScreen({Key? key}) : super(key: key);
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<MainScreen> createState() => _MainScreenState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _MainScreenState extends State<MainScreen> {
   late List<CameraDescription> cameras;
   late CameraController cameraController;
 
@@ -39,7 +44,7 @@ class _HomePageState extends State<HomePage> {
       if (!mounted) {
         return;
       }
-      setState(() {}); // To refresh widget
+      setState(() {});
     }).catchError((e) {
       print(e);
     });
@@ -73,7 +78,7 @@ class _HomePageState extends State<HomePage> {
                   startVideoRecording();
                 } else {
                   stopVideoRecording();
-                  await uploadVideoToFirebaseStorage();
+
 
                 }
               },
@@ -82,6 +87,17 @@ class _HomePageState extends State<HomePage> {
                 Alignment.bottomCenter,
               ),
             ),
+            GestureDetector(
+              onTap: () {
+
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ShowAllVideos()),
+                );
+              },
+              child: button(Icons.browse_gallery, Alignment.bottomRight),
+            ),
+
             Align(
               alignment: AlignmentDirectional.topCenter,
               child: Text(
@@ -109,38 +125,46 @@ class _HomePageState extends State<HomePage> {
       print(e);
     }
   }
-
   void stopVideoRecording() async {
     try {
-      await cameraController.stopVideoRecording().then((value) {
-        setState(() {
-          isRecording = false;
-        });
+      final XFile videoFile = await cameraController.stopVideoRecording();
+      print('Video file path: ${videoFile.path}');
+
+      setState(() {
+        isRecording = false;
       });
+
+
+      await uploadVideoToFirebaseStorage(videoFile.path);
     } catch (e) {
-      print(e);
+      print('Error stopping video recording: $e');
     }
   }
-  Future<void> uploadVideoToFirebaseStorage() async {
+
+
+  Future<void> uploadVideoToFirebaseStorage(String videoPath) async {
     try {
-      final Directory appDir = await getApplicationDocumentsDirectory();
-      final String videoPath = path.join(appDir.path, 'video.mp4');
-      final String fileName = path.basename(videoPath);
-      final File videoFile = File(videoPath);
+      final List<int> videoBytes = await File(videoPath).readAsBytes();
 
-      if (videoFile.existsSync()) {
-        final firebase_storage.Reference storageReference =
-        firebase_storage.FirebaseStorage.instance.ref().child('videos/$fileName');
+      String timestamp = DateTime.now().millisecondsSinceEpoch.toString();
+      var ext = ".mp4";
+      var vidname = timestamp + ext;
 
-        await storageReference.putFile(videoFile);
-        print('Video uploaded to Firebase Storage!');
-      } else {
-        print('Error: Video file does not exist at path $videoPath');
-      }
+      final firebase_storage.Reference storageReference =
+      firebase_storage.FirebaseStorage.instance.ref().child('videos/$vidname');
+
+      await storageReference.putData(Uint8List.fromList(videoBytes));
+      print('Video uploaded to Firebase Storage!');
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => form_fillup(vidname: vidname)),
+      );
     } catch (e) {
       print('Error uploading video to Firebase Storage: $e');
     }
   }
+
 
   Widget button(IconData icon, Alignment alignment) {
     return Align(

@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:backcoffer_task/HomePage.dart';
+import 'package:backcoffer_task/camera_screen.dart';
 import 'package:backcoffer_task/main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -40,8 +41,9 @@ class _OTPscreenState extends State<OTPscreen> {
               try{
                 PhoneAuthCredential credential=await PhoneAuthProvider.credential(verificationId: widget.verificationid, smsCode: otpController.text.toString());
                 FirebaseAuth.instance.signInWithCredential(credential).then((value) => {
-                  Navigator.push(context,MaterialPageRoute(builder: (context)=>HomePage()))
-                  
+                  // Navigator.push(context,MaterialPageRoute(builder: (context)=>HomePage()))
+                  Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => MainScreen()),)
+
                 });
               }catch(ex){
                 log(ex as num);
